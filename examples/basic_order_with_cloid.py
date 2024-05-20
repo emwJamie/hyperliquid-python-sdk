@@ -4,13 +4,17 @@ import example_utils
 
 
 def main():
-    address, info, exchange = example_utils.setup(constants.TESTNET_API_URL, skip_ws=True)
+    address, info, exchange = example_utils.setup(
+        constants.TESTNET_API_URL, skip_ws=True
+    )
 
     cloid = Cloid.from_str("0x00000000000000000000000000000001")
     # Users can also generate a cloid from an int
     # cloid = Cloid.from_int(1)
     # Place an order that should rest by setting the price very low
-    order_result = exchange.order("ETH", True, 0.2, 1100, {"limit": {"tif": "Gtc"}}, cloid=cloid)
+    order_result = exchange.order(
+        "ETH", True, 0.2, 1100, {"limit": {"tif": "Gtc"}}, cloid=cloid
+    )
     print(order_result)
 
     # Query the order status by cloid

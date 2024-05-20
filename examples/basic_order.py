@@ -5,7 +5,9 @@ import example_utils
 
 
 def main():
-    address, info, exchange = example_utils.setup(base_url=constants.TESTNET_API_URL, skip_ws=True)
+    address, info, exchange = example_utils.setup(
+        base_url=constants.TESTNET_API_URL, skip_ws=True
+    )
 
     # Get the user state and print out position information
     user_state = info.user_state(address)

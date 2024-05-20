@@ -5,15 +5,32 @@ from eth_account.messages import encode_structured_data
 from eth_utils import keccak, to_hex
 import msgpack
 
-from hyperliquid.utils.types import Literal, Optional, TypedDict, Union, Cloid, NotRequired
+from hyperliquid.utils.types import (
+    Literal,
+    Optional,
+    TypedDict,
+    Union,
+    Cloid,
+    NotRequired,
+)
 
 Tif = Union[Literal["Alo"], Literal["Ioc"], Literal["Gtc"]]
 Tpsl = Union[Literal["tp"], Literal["sl"]]
 LimitOrderType = TypedDict("LimitOrderType", {"tif": Tif})
-TriggerOrderType = TypedDict("TriggerOrderType", {"triggerPx": float, "isMarket": bool, "tpsl": Tpsl})
-TriggerOrderTypeWire = TypedDict("TriggerOrderTypeWire", {"triggerPx": str, "isMarket": bool, "tpsl": Tpsl})
-OrderType = TypedDict("OrderType", {"limit": LimitOrderType, "trigger": TriggerOrderType}, total=False)
-OrderTypeWire = TypedDict("OrderTypeWire", {"limit": LimitOrderType, "trigger": TriggerOrderTypeWire}, total=False)
+TriggerOrderType = TypedDict(
+    "TriggerOrderType", {"triggerPx": float, "isMarket": bool, "tpsl": Tpsl}
+)
+TriggerOrderTypeWire = TypedDict(
+    "TriggerOrderTypeWire", {"triggerPx": str, "isMarket": bool, "tpsl": Tpsl}
+)
+OrderType = TypedDict(
+    "OrderType", {"limit": LimitOrderType, "trigger": TriggerOrderType}, total=False
+)
+OrderTypeWire = TypedDict(
+    "OrderTypeWire",
+    {"limit": LimitOrderType, "trigger": TriggerOrderTypeWire},
+    total=False,
+)
 OrderRequest = TypedDict(
     "OrderRequest",
     {
@@ -28,19 +45,22 @@ OrderRequest = TypedDict(
     total=False,
 )
 ModifyRequest = TypedDict(
-    "ModifyRequest",
-    {
-        "oid": int,
-        "order": OrderRequest,
-    },
-    total=False,
+    "ModifyRequest", {"oid": int, "order": OrderRequest,}, total=False,
 )
 CancelRequest = TypedDict("CancelRequest", {"coin": str, "oid": int})
 CancelByCloidRequest = TypedDict("CancelByCloidRequest", {"coin": str, "cloid": Cloid})
 
 Grouping = Union[Literal["na"], Literal["normalTpsl"], Literal["positionTpsl"]]
 Order = TypedDict(
-    "Order", {"asset": int, "isBuy": bool, "limitPx": float, "sz": float, "reduceOnly": bool, "cloid": Optional[Cloid]}
+    "Order",
+    {
+        "asset": int,
+        "isBuy": bool,
+        "limitPx": float,
+        "sz": float,
+        "reduceOnly": bool,
+        "cloid": Optional[Cloid],
+    },
 )
 
 
@@ -57,20 +77,11 @@ OrderWire = TypedDict(
     },
 )
 
-ModifyWire = TypedDict(
-    "ModifyWire",
-    {
-        "oid": int,
-        "order": OrderWire,
-    },
-)
+ModifyWire = TypedDict("ModifyWire", {"oid": int, "order": OrderWire,},)
 
 ScheduleCancelAction = TypedDict(
     "ScheduleCancelAction",
-    {
-        "type": Literal["scheduleCancel"],
-        "time": NotRequired[Optional[int]],
-    },
+    {"type": Literal["scheduleCancel"], "time": NotRequired[Optional[int]],},
 )
 
 
@@ -240,7 +251,7 @@ def float_to_usd_int(x: float) -> int:
 
 
 def float_to_int(x: float, power: int) -> int:
-    with_decimals = x * 10**power
+    with_decimals = x * 10 ** power
     if abs(round(with_decimals) - with_decimals) >= 1e-3:
         raise ValueError("float_to_int causes rounding", x)
     res: int = round(with_decimals)

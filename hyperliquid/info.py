@@ -1,5 +1,14 @@
 from hyperliquid.api import API
-from hyperliquid.utils.types import Any, Callable, Meta, SpotMeta, Optional, Subscription, cast, Cloid
+from hyperliquid.utils.types import (
+    Any,
+    Callable,
+    Meta,
+    SpotMeta,
+    Optional,
+    Subscription,
+    cast,
+    Cloid,
+)
 from hyperliquid.websocket_manager import WebsocketManager
 
 
@@ -53,7 +62,7 @@ class Info(API):
                 }
         """
         return self.post("/info", {"type": "clearinghouseState", "user": address})
-    
+
     def spot_user_state(self, address: str) -> Any:
         return self.post("/info", {"type": "spotClearinghouseState", "user": address})
 
@@ -198,7 +207,9 @@ class Info(API):
         """
         return cast(SpotMeta, self.post("/info", {"type": "spotMeta"}))
 
-    def funding_history(self, coin: str, startTime: int, endTime: Optional[int] = None) -> Any:
+    def funding_history(
+        self, coin: str, startTime: int, endTime: Optional[int] = None
+    ) -> Any:
         """Retrieve funding history for a given coin
 
         POST /info
@@ -221,11 +232,21 @@ class Info(API):
         """
         if endTime is not None:
             return self.post(
-                "/info", {"type": "fundingHistory", "coin": coin, "startTime": startTime, "endTime": endTime}
+                "/info",
+                {
+                    "type": "fundingHistory",
+                    "coin": coin,
+                    "startTime": startTime,
+                    "endTime": endTime,
+                },
             )
-        return self.post("/info", {"type": "fundingHistory", "coin": coin, "startTime": startTime})
+        return self.post(
+            "/info", {"type": "fundingHistory", "coin": coin, "startTime": startTime}
+        )
 
-    def user_funding_history(self, user: str, startTime: int, endTime: Optional[int] = None) -> Any:
+    def user_funding_history(
+        self, user: str, startTime: int, endTime: Optional[int] = None
+    ) -> Any:
         """Retrieve a user's funding history
         POST /info
         Args:
@@ -240,8 +261,18 @@ class Info(API):
                 - endTime (int): Unix timestamp of the end time in milliseconds.
         """
         if endTime is not None:
-            return self.post("/info", {"type": "userFunding", "user": user, "startTime": startTime, "endTime": endTime})
-        return self.post("/info", {"type": "userFunding", "user": user, "startTime": startTime})
+            return self.post(
+                "/info",
+                {
+                    "type": "userFunding",
+                    "user": user,
+                    "startTime": startTime,
+                    "endTime": endTime,
+                },
+            )
+        return self.post(
+            "/info", {"type": "userFunding", "user": user, "startTime": startTime}
+        )
 
     def l2_snapshot(self, coin: str) -> Any:
         """Retrieve L2 snapshot for a given coin
@@ -270,7 +301,9 @@ class Info(API):
         """
         return self.post("/info", {"type": "l2Book", "coin": coin})
 
-    def candles_snapshot(self, coin: str, interval: str, startTime: int, endTime: int) -> Any:
+    def candles_snapshot(
+        self, coin: str, interval: str, startTime: int, endTime: int
+    ) -> Any:
         """Retrieve candles snapshot for a given coin
 
         POST /info
@@ -298,7 +331,12 @@ class Info(API):
                 ...
             ]
         """
-        req = {"coin": coin, "interval": interval, "startTime": startTime, "endTime": endTime}
+        req = {
+            "coin": coin,
+            "interval": interval,
+            "startTime": startTime,
+            "endTime": endTime,
+        }
         return self.post("/info", {"type": "candleSnapshot", "req": req})
 
     def user_fees(self, address: str) -> Any:
@@ -351,7 +389,9 @@ class Info(API):
         return self.post("/info", {"type": "orderStatus", "user": user, "oid": oid})
 
     def query_order_by_cloid(self, user: str, cloid: Cloid) -> Any:
-        return self.post("/info", {"type": "orderStatus", "user": user, "oid": cloid.to_raw()})
+        return self.post(
+            "/info", {"type": "orderStatus", "user": user, "oid": cloid.to_raw()}
+        )
 
     def query_referral_state(self, user: str) -> Any:
         return self.post("/info", {"type": "referral", "user": user})
@@ -359,7 +399,9 @@ class Info(API):
     def query_sub_accounts(self, user: str) -> Any:
         return self.post("/info", {"type": "subAccounts", "user": user})
 
-    def subscribe(self, subscription: Subscription, callback: Callable[[Any], None]) -> int:
+    def subscribe(
+        self, subscription: Subscription, callback: Callable[[Any], None]
+    ) -> int:
         if self.ws_manager is None:
             raise RuntimeError("Cannot call subscribe since skip_ws was used")
         else:

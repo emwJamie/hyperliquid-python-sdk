@@ -34,7 +34,11 @@ class API:
             try:
                 err = json.loads(response.text)
             except JSONDecodeError:
-                raise ClientError(status_code, None, response.text, None, response.headers)
+                raise ClientError(
+                    status_code, None, response.text, None, response.headers
+                )
             error_data = err.get("data")
-            raise ClientError(status_code, err["code"], err["msg"], response.headers, error_data)
+            raise ClientError(
+                status_code, err["code"], err["msg"], response.headers, error_data
+            )
         raise ServerError(status_code, response.text)

@@ -3,7 +3,9 @@ import example_utils
 
 
 def main():
-    address, info, exchange = example_utils.setup(constants.TESTNET_API_URL, skip_ws=True)
+    address, info, exchange = example_utils.setup(
+        constants.TESTNET_API_URL, skip_ws=True
+    )
 
     # Set the referrer code, for non-subaccount and non-vault addresses
     print(exchange.set_referrer("ASDFASDF"))

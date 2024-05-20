@@ -9,16 +9,33 @@ def main():
     parser.add_argument("--is_buy", action="store_true")
     args = parser.parse_args()
 
-    address, info, exchange = example_utils.setup(constants.TESTNET_API_URL, skip_ws=True)
+    address, info, exchange = example_utils.setup(
+        constants.TESTNET_API_URL, skip_ws=True
+    )
 
     is_buy = args.is_buy
     # Place an order that should execute by setting the price very aggressively
-    order_result = exchange.order("ETH", is_buy, 0.02, 2500 if is_buy else 1500, {"limit": {"tif": "Gtc"}})
+    order_result = exchange.order(
+        "ETH", is_buy, 0.02, 2500 if is_buy else 1500, {"limit": {"tif": "Gtc"}}
+    )
     print(order_result)
 
     # Place a stop order
-    stop_order_type = {"trigger": {"triggerPx": 1600 if is_buy else 2400, "isMarket": True, "tpsl": "sl"}}
-    stop_result = exchange.order("ETH", not is_buy, 0.02, 1500 if is_buy else 2500, stop_order_type, reduce_only=True)
+    stop_order_type = {
+        "trigger": {
+            "triggerPx": 1600 if is_buy else 2400,
+            "isMarket": True,
+            "tpsl": "sl",
+        }
+    }
+    stop_result = exchange.order(
+        "ETH",
+        not is_buy,
+        0.02,
+        1500 if is_buy else 2500,
+        stop_order_type,
+        reduce_only=True,
+    )
     print(stop_result)
 
     # Cancel the order
@@ -29,8 +46,21 @@ def main():
             print(cancel_result)
 
     # Place a tp order
-    tp_order_type = {"trigger": {"triggerPx": 1600 if is_buy else 2400, "isMarket": True, "tpsl": "tp"}}
-    tp_result = exchange.order("ETH", not is_buy, 0.02, 2500 if is_buy else 1500, tp_order_type, reduce_only=True)
+    tp_order_type = {
+        "trigger": {
+            "triggerPx": 1600 if is_buy else 2400,
+            "isMarket": True,
+            "tpsl": "tp",
+        }
+    }
+    tp_result = exchange.order(
+        "ETH",
+        not is_buy,
+        0.02,
+        2500 if is_buy else 1500,
+        tp_order_type,
+        reduce_only=True,
+    )
     print(tp_result)
 
     # Cancel the order

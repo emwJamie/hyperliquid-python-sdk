@@ -6,7 +6,9 @@ import example_utils
 
 
 def main():
-    address, info, exchange = example_utils.setup(base_url=constants.TESTNET_API_URL, skip_ws=True)
+    address, info, exchange = example_utils.setup(
+        base_url=constants.TESTNET_API_URL, skip_ws=True
+    )
 
     # Place an order that should rest by setting the price very low
     order_result = exchange.order("ETH", True, 0.2, 1100, {"limit": {"tif": "Gtc"}})

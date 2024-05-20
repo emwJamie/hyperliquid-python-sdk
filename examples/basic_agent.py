@@ -7,7 +7,9 @@ import example_utils
 
 
 def main():
-    address, info, exchange = example_utils.setup(constants.TESTNET_API_URL, skip_ws=True)
+    address, info, exchange = example_utils.setup(
+        constants.TESTNET_API_URL, skip_ws=True
+    )
 
     if exchange.account_address != exchange.wallet.address:
         raise Exception("You should not create an agent using an agent")
@@ -24,9 +26,13 @@ def main():
 
     agent_account: LocalAccount = eth_account.Account.from_key(agent_key)
     print("Running with agent address:", agent_account.address)
-    agent_exchange = Exchange(agent_account, constants.TESTNET_API_URL, account_address=address)
+    agent_exchange = Exchange(
+        agent_account, constants.TESTNET_API_URL, account_address=address
+    )
     # Place an order that should rest by setting the price very low
-    order_result = agent_exchange.order("ETH", True, 0.2, 1000, {"limit": {"tif": "Gtc"}})
+    order_result = agent_exchange.order(
+        "ETH", True, 0.2, 1000, {"limit": {"tif": "Gtc"}}
+    )
     print(order_result)
 
     # Cancel the order
@@ -43,11 +49,15 @@ def main():
         return
 
     extra_agent_account: LocalAccount = eth_account.Account.from_key(extra_agent_key)
-    extra_agent_exchange = Exchange(extra_agent_account, constants.TESTNET_API_URL, account_address=address)
+    extra_agent_exchange = Exchange(
+        extra_agent_account, constants.TESTNET_API_URL, account_address=address
+    )
     print("Running with extra agent address:", extra_agent_account.address)
 
     print("Placing order with original agent")
-    order_result = extra_agent_exchange.order("ETH", True, 0.2, 1000, {"limit": {"tif": "Gtc"}})
+    order_result = extra_agent_exchange.order(
+        "ETH", True, 0.2, 1000, {"limit": {"tif": "Gtc"}}
+    )
     print(order_result)
 
     if order_result["status"] == "ok":

@@ -59,7 +59,9 @@ def test_get_funding_history(endTime):
     if endTime is None:
         response = info.funding_history(coin="BTC", startTime=1681923833000)
     else:
-        response = info.funding_history(coin="BTC", startTime=1681923833000, endTime=endTime)
+        response = info.funding_history(
+            coin="BTC", startTime=1681923833000, endTime=endTime
+        )
     assert len(response) != 0
     assert response[0]["coin"] == "BTC"
     for key in ["coin", "fundingRate", "premium", "time"]:
@@ -83,7 +85,9 @@ def test_get_l2_snapshot():
 @pytest.mark.vcr()
 def test_get_candles_snapshot():
     info = Info(skip_ws=True)
-    response = info.candles_snapshot(coin="kPEPE", interval="1h", startTime=1684702007000, endTime=1684784807000)
+    response = info.candles_snapshot(
+        coin="kPEPE", interval="1h", startTime=1684702007000, endTime=1684784807000
+    )
     assert len(response) == 24
     for key in ["T", "c", "h", "i", "l", "n", "o", "s", "t", "v"]:
         assert key in response[0].keys()
@@ -93,7 +97,9 @@ def test_get_candles_snapshot():
 def test_user_funding_history_with_end_time():
     info = Info(skip_ws=True)
     response = info.user_funding_history(
-        user="0xb7b6f3cea3f66bf525f5d8f965f6dbf6d9b017b2", startTime=1681923833000, endTime=1682010233000
+        user="0xb7b6f3cea3f66bf525f5d8f965f6dbf6d9b017b2",
+        startTime=1681923833000,
+        endTime=1682010233000,
     )
     assert isinstance(response, list), "The answer should be a list"
     for record in response:
@@ -109,7 +115,9 @@ def test_user_funding_history_with_end_time():
 @pytest.mark.vcr()
 def test_user_funding_history_without_end_time():
     info = Info(skip_ws=True)
-    response = info.user_funding_history(user="0xb7b6f3cea3f66bf525f5d8f965f6dbf6d9b017b2", startTime=1681923833000)
+    response = info.user_funding_history(
+        user="0xb7b6f3cea3f66bf525f5d8f965f6dbf6d9b017b2", startTime=1681923833000
+    )
     assert isinstance(response, list), "The answer must be a list"
     for record in response:
         assert "delta" in record, "There must be a key 'delta'"

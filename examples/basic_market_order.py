@@ -5,7 +5,9 @@ import example_utils
 
 
 def main():
-    address, info, exchange = example_utils.setup(constants.TESTNET_API_URL, skip_ws=True)
+    address, info, exchange = example_utils.setup(
+        constants.TESTNET_API_URL, skip_ws=True
+    )
 
     coin = "ETH"
     is_buy = False
@@ -18,7 +20,9 @@ def main():
         for status in order_result["response"]["data"]["statuses"]:
             try:
                 filled = status["filled"]
-                print(f'Order #{filled["oid"]} filled {filled["totalSz"]} @{filled["avgPx"]}')
+                print(
+                    f'Order #{filled["oid"]} filled {filled["totalSz"]} @{filled["avgPx"]}'
+                )
             except KeyError:
                 print(f'Error: {status["error"]}')
 
@@ -31,7 +35,9 @@ def main():
             for status in order_result["response"]["data"]["statuses"]:
                 try:
                     filled = status["filled"]
-                    print(f'Order #{filled["oid"]} filled {filled["totalSz"]} @{filled["avgPx"]}')
+                    print(
+                        f'Order #{filled["oid"]} filled {filled["totalSz"]} @{filled["avgPx"]}'
+                    )
                 except KeyError:
                     print(f'Error: {status["error"]}')
 

@@ -5,13 +5,18 @@ import example_utils
 
 
 def main():
-    address, info, exchange = example_utils.setup(constants.TESTNET_API_URL, skip_ws=True)
+    address, info, exchange = example_utils.setup(
+        constants.TESTNET_API_URL, skip_ws=True
+    )
 
     # Get the user state and print out leverage information for ETH
     user_state = info.user_state(address)
     for asset_position in user_state["assetPositions"]:
         if asset_position["position"]["coin"] == "ETH":
-            print("Current leverage for ETH:", json.dumps(asset_position["position"]["leverage"], indent=2))
+            print(
+                "Current leverage for ETH:",
+                json.dumps(asset_position["position"]["leverage"], indent=2),
+            )
 
     # Set the ETH leverage to 21x (cross margin)
     print(exchange.update_leverage(21, "ETH"))
@@ -26,7 +31,10 @@ def main():
     user_state = info.user_state(address)
     for asset_position in user_state["assetPositions"]:
         if asset_position["position"]["coin"] == "ETH":
-            print("Current leverage for ETH:", json.dumps(asset_position["position"]["leverage"], indent=2))
+            print(
+                "Current leverage for ETH:",
+                json.dumps(asset_position["position"]["leverage"], indent=2),
+            )
 
 
 if __name__ == "__main__":

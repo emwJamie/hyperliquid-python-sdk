@@ -3,7 +3,9 @@ import example_utils
 
 
 def main():
-    address, info, exchange = example_utils.setup(constants.TESTNET_API_URL, skip_ws=True)
+    address, info, exchange = example_utils.setup(
+        constants.TESTNET_API_URL, skip_ws=True
+    )
 
     # Transfer 1.23 USDC from perp wallet to spot wallet
     transfer_result = exchange.user_spot_transfer(1.23, False)

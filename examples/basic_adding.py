@@ -38,7 +38,9 @@ MAX_POSITION = 1.0
 # The coin to add liquidity on
 COIN = "ETH"
 
-InFlightOrder = TypedDict("InFlightOrder", {"type": Literal["in_flight_order"], "time": int})
+InFlightOrder = TypedDict(
+    "InFlightOrder", {"type": Literal["in_flight_order"], "time": int}
+)
 Resting = TypedDict("Resting", {"type": Literal["resting"], "px": float, "oid": int})
 Cancelled = TypedDict("Cancelled", {"type": Literal["cancelled"]})
 ProvideState = Union[InFlightOrder, Resting, Cancelled]
@@ -58,7 +60,9 @@ class BasicAdder:
         self.exchange = exchange
         subscription: L2BookSubscription = {"type": "l2Book", "coin": COIN}
         self.info.subscribe(subscription, self.on_book_update)
-        self.info.subscribe({"type": "userEvents", "user": address}, self.on_user_events)
+        self.info.subscribe(
+            {"type": "userEvents", "user": address}, self.on_user_events
+        )
         self.position: Optional[float] = None
         self.provide_state: Dict[Side, ProvideState] = {
             "A": {"type": "cancelled"},
@@ -96,33 +100,54 @@ class BasicAdder:
                         self.recently_cancelled_oid_to_time[oid] = get_timestamp_ms()
                         self.provide_state[side] = {"type": "cancelled"}
                     else:
-                        print(f"Failed to cancel order {provide_state} {side}", response)
+                        print(
+                            f"Failed to cancel order {provide_state} {side}", response
+                        )
             elif provide_state["type"] == "in_flight_order":
                 if get_timestamp_ms() - provide_state["time"] > 10000:
-                    print("Order is still in flight after 10s treating as cancelled", provide_state)
+                    print(
+                        "Order is still in flight after 10s treating as cancelled",
+                        provide_state,
+                    )
                     self.provide_state[side] = {"type": "cancelled"}
 
             # If we aren't providing, maybe place a new order
             provide_state = self.provide_state[side]
             if provide_state["type"] == "cancelled":
                 if self.position is None:
-                    logging.debug("Not placing an order because waiting for next position refresh")
+                    logging.debug(
+                        "Not placing an order because waiting for next position refresh"
+                    )
                     continue
                 sz = MAX_POSITION + self.position * (side_to_int(side))
                 if sz * ideal_price < 10:
                     logging.debug("Not placing an order because at position limit")
                     continue
-                px = float(f"{ideal_price:.5g}")  # prices should have at most 5 significant digits
+                px = float(
+                    f"{ideal_price:.5g}"
+                )  # prices should have at most 5 significant digits
                 print(f"placing order sz:{sz} px:{px} side:{side}")
-                self.provide_state[side] = {"type": "in_flight_order", "time": get_timestamp_ms()}
-                response = self.exchange.order(COIN, side == "B", sz, px, {"limit": {"tif": "Alo"}})
+                self.provide_state[side] = {
+                    "type": "in_flight_order",
+                    "time": get_timestamp_ms(),
+                }
+                response = self.exchange.order(
+                    COIN, side == "B", sz, px, {"limit": {"tif": "Alo"}}
+                )
                 print("placed order", response)
                 if response["status"] == "ok":
                     status = response["response"]["data"]["statuses"][0]
                     if "resting" in status:
-                        self.provide_state[side] = {"type": "resting", "px": px, "oid": status["resting"]["oid"]}
+                        self.provide_state[side] = {
+                            "type": "resting",
+                            "px": px,
+                            "oid": status["resting"]["oid"],
+                        }
                     else:
-                        print("Unexpected response from placing order. Setting position to None.", response)
+                        print(
+                            "Unexpected response from placing order. Setting position to None.",
+                            response,
+                        )
                         self.provide_state[side] = {"type": "cancelled"}
                         self.position = None
 

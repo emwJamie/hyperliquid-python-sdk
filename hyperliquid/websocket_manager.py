@@ -6,9 +6,22 @@ from collections import defaultdict
 
 import websocket
 
-from hyperliquid.utils.types import Any, Callable, Dict, List, NamedTuple, Optional, Subscription, Tuple, WsMsg
+from hyperliquid.utils.types import (
+    Any,
+    Callable,
+    Dict,
+    List,
+    NamedTuple,
+    Optional,
+    Subscription,
+    Tuple,
+    WsMsg,
+)
 
-ActiveSubscription = NamedTuple("ActiveSubscription", [("callback", Callable[[Any], None]), ("subscription_id", int)])
+ActiveSubscription = NamedTuple(
+    "ActiveSubscription",
+    [("callback", Callable[[Any], None]), ("subscription_id", int)],
+)
 
 
 def subscription_to_identifier(subscription: Subscription) -> str:
@@ -45,9 +58,13 @@ class WebsocketManager(threading.Thread):
         self.subscription_id_counter = 0
         self.ws_ready = False
         self.queued_subscriptions: List[Tuple[Subscription, ActiveSubscription]] = []
-        self.active_subscriptions: Dict[str, List[ActiveSubscription]] = defaultdict(list)
+        self.active_subscriptions: Dict[str, List[ActiveSubscription]] = defaultdict(
+            list
+        )
         ws_url = "ws" + base_url[len("http") :] + "/ws"
-        self.ws = websocket.WebSocketApp(ws_url, on_message=self.on_message, on_open=self.on_open)
+        self.ws = websocket.WebSocketApp(
+            ws_url, on_message=self.on_message, on_open=self.on_open
+        )
         self.ping_sender = threading.Thread(target=self.send_ping)
 
     def run(self):
@@ -75,7 +92,11 @@ class WebsocketManager(threading.Thread):
             return
         active_subscriptions = self.active_subscriptions[identifier]
         if len(active_subscriptions) == 0:
-            print("Websocket message from an unexpected subscription:", message, identifier)
+            print(
+                "Websocket message from an unexpected subscription:",
+                message,
+                identifier,
+            )
         else:
             for active_subscription in active_subscriptions:
                 active_subscription.callback(ws_msg)
@@ -84,26 +105,41 @@ class WebsocketManager(threading.Thread):
         logging.debug("on_open")
         self.ws_ready = True
         for (subscription, active_subscription) in self.queued_subscriptions:
-            self.subscribe(subscription, active_subscription.callback, active_subscription.subscription_id)
+            self.subscribe(
+                subscription,
+                active_subscription.callback,
+                active_subscription.subscription_id,
+            )
 
     def subscribe(
-        self, subscription: Subscription, callback: Callable[[Any], None], subscription_id: Optional[int] = None
+        self,
+        subscription: Subscription,
+        callback: Callable[[Any], None],
+        subscription_id: Optional[int] = None,
     ) -> int:
         if subscription_id is None:
             self.subscription_id_counter += 1
             subscription_id = self.subscription_id_counter
         if not self.ws_ready:
             logging.debug("enqueueing subscription")
-            self.queued_subscriptions.append((subscription, ActiveSubscription(callback, subscription_id)))
+            self.queued_subscriptions.append(
+                (subscription, ActiveSubscription(callback, subscription_id))
+            )
         else:
             logging.debug("subscribing")
             identifier = subscription_to_identifier(subscription)
             if subscription["type"] == "userEvents":
                 # TODO: ideally the userEvent messages would include the user so that we can support multiplexing them
                 if len(self.active_subscriptions[identifier]) != 0:
-                    raise NotImplementedError("Cannot subscribe to UserEvents multiple times")
-            self.active_subscriptions[identifier].append(ActiveSubscription(callback, subscription_id))
-            self.ws.send(json.dumps({"method": "subscribe", "subscription": subscription}))
+                    raise NotImplementedError(
+                        "Cannot subscribe to UserEvents multiple times"
+                    )
+            self.active_subscriptions[identifier].append(
+                ActiveSubscription(callback, subscription_id)
+            )
+            self.ws.send(
+                json.dumps({"method": "subscribe", "subscription": subscription})
+            )
         return subscription_id
 
     def unsubscribe(self, subscription: Subscription, subscription_id: int) -> bool:
@@ -111,8 +147,12 @@ class WebsocketManager(threading.Thread):
             raise NotImplementedError("Can't unsubscribe before websocket connected")
         identifier = subscription_to_identifier(subscription)
         active_subscriptions = self.active_subscriptions[identifier]
-        new_active_subscriptions = [x for x in active_subscriptions if x.subscription_id != subscription_id]
+        new_active_subscriptions = [
+            x for x in active_subscriptions if x.subscription_id != subscription_id
+        ]
         if len(new_active_subscriptions) == 0:
-            self.ws.send(json.dumps({"method": "unsubscribe", "subscription": subscription}))
+            self.ws.send(
+                json.dumps({"method": "unsubscribe", "subscription": subscription})
+            )
         self.active_subscriptions[identifier] = new_active_subscriptions
         return len(active_subscriptions) != len(new_active_subscriptions)
